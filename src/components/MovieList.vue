@@ -1,24 +1,45 @@
 <template>
     <div id="movie-list">
-        <div v-for="movie in filteredMovies" :key="movie.title" class="movie">{{ movie.title }}</div>
+        <div v-if="filteredMovies.length">
+            <movie-item
+                v-for="movie in filteredMovies" :key="movie.id"
+                :movie="movie.movie">
+                <div class="movie-sessions">
+                    <div
+                        v-for="session in filteredSessions(movie.sessions)"
+                        :key="session.id"
+                        class="session-time-wrapper">
+                        <div class="session-time">{{ formatSessionTime(session.time) }}</div>
+                    </div>
+                </div>
+            </movie-item>
+        </div>
+        <div v-else-if="movies.length" class="no-results">
+            {{ noResults }}
+        </div>
+        <div v-else class="no-results">
+            Loading...
+        </div>
     </div>
 </template>
 <script>
+import moment from 'moment-timezone'
 import genres from '../util/genres'
+import times from '../util/times'
+import MovieItem from './MovieItem.vue'
 export default {
-    data: ()=> {
-        return {
-            movies: [
-                { title: 'Pulp Fiction', genre: genres.CRIME},
-                { title: 'Natural Born Killers', genre: genres.COMEDY},
-                { title: 'Trainspotting', genre: genres.DOCUMENTARY }
-            ]
-        }
-    },
-    props: [ 'genre', 'time' ],
+    components: { MovieItem },
+    props: [ 'genre', 'time', 'movies', 'day' ],
     computed: {
         filteredMovies() {
-            return this.movies.filter(this.moviePassesGenreFilter)
+            return this.movies
+                .filter(this.moviePassesGenreFilter)
+                .filter(movie => movie.sessions.find(this.sessionPassesTimeFilter))
+        },
+        noResults() {
+            let times = this.time.join(', ')
+            let genres = this.genre.join(', ')
+            return `No result for ${times}${times.length && genres.length ? ', ' : ''}${genres}`
         }
     },
     methods: {
@@ -26,7 +47,31 @@ export default {
             if (!this.genre.length) {
                 return true
             } else {
-                return this.genre.find(genre => movie.genre === genre)
+                let movieGenres = movie.movie.Genre.split(", ")
+                let matched = true
+                this.genre.forEach(genre => {
+                    if (movieGenres.indexOf(genre) === -1) {
+                        matched = false
+                    }
+                })
+                return matched
+            }
+        },
+        formatSessionTime(raw) {
+            return moment(raw).format('h:mm A')
+        },
+        filteredSessions(sessions) {
+            return sessions.filter(this.sessionPassesTimeFilter)
+        },
+        sessionPassesTimeFilter(session) {
+            if (!this.day.isSame(moment(session.time), 'day')) {
+                return false
+            } else if (this.time.length === 0 || this.time.length === 2) {
+                return true
+            } else if (this.time[0] === times.AFTER_6PM) {
+                return moment(session.time).hour >= 18
+            } else {
+                return moment(session.time).hour < 18
             }
         }
     }
