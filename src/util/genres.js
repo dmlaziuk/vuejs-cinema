@@ -1,4 +1,4 @@
-module.exports = Object.freeze({
+export default {
   ANIMATION: 'Animation',
   COMEDY: 'Comedy',
   CRIME: 'Crime',
@@ -6,4 +6,4 @@ module.exports = Object.freeze({
   DRAMA: 'Drama',
   FANTASY: 'Fantasy',
   HORROR: 'Horror'
-});
+}
