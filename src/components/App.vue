@@ -1,24 +1,34 @@
 <template>
     <div id="app">
         <app-title></app-title>
-        <router-view
-            :genre="genre"
-            :time="time"
-            :movies="movies"
-            :day="day">
-        </router-view>
-  </div>
+        <keep-alive>
+            <router-view
+                :genre="genre"
+                :time="time"
+                :movies="movies"
+                :day="day">
+            </router-view>
+        </keep-alive>
+    </div>
 </template>
 <script>
 import moment from 'moment-timezone'
 import Vue from 'vue'
+import VueResource from 'vue-resource'
 import VueRouter from 'vue-router'
+import Tooltip from '../util/tooltip'
 import AppTitle from './AppTitle.vue'
 import Overview from './Overview.vue'
 import Detail from './Detail.vue'
 
+moment.tz.setDefault("UTC")
+
 const bus = new Vue()
 Object.defineProperty(Vue.prototype, '$bus', { get() { return this.$root.bus } })
+
+Vue.use(VueResource)
+Vue.use(VueRouter)
+Vue.use(Tooltip)
 
 const router = new VueRouter({
     routes: [
@@ -54,6 +64,7 @@ export default {
     created() {
         this.$http.get('/api').then(response => { this.movies = response.data })
         this.$bus.$on('check-filter', this.checkFilter)
+        this.$bus.$on('set-day', day => this.day = day )
     },
     router
 }
