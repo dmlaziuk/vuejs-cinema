@@ -12,6 +12,7 @@
         </ul>
     </div>
 </template>
+
 <script>
 import moment from 'moment-timezone'
 export default {

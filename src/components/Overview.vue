@@ -12,6 +12,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import DaySelect from './DaySelect.vue'
 import MovieList from './MovieList.vue'

@@ -23,13 +23,13 @@
         </div>
     </div>
 </template>
+
 <script>
 import moment from 'moment-timezone'
 import genres from '../util/genres'
 import times from '../util/times'
 import MovieItem from './MovieItem.vue'
 export default {
-    components: { MovieItem },
     props: [ 'genre', 'time', 'movies', 'day' ],
     computed: {
         filteredMovies() {
@@ -43,6 +43,7 @@ export default {
             return `No result for ${times}${times.length && genres.length ? ', ' : ''}${genres}`
         }
     },
+    components: { MovieItem },
     methods: {
         moviePassesGenreFilter(movie) {
             if (!this.genre.length) {

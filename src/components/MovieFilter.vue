@@ -19,6 +19,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import genres from '../util/genres'
 import times from '../util/times'

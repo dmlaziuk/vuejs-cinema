@@ -11,6 +11,7 @@
         </keep-alive>
     </div>
 </template>
+
 <script>
 import moment from 'moment-timezone'
 import Vue from 'vue'
@@ -20,11 +21,6 @@ import Tooltip from '../util/tooltip'
 import AppTitle from './AppTitle.vue'
 import Overview from './Overview.vue'
 import Detail from './Detail.vue'
-
-moment.tz.setDefault("UTC")
-
-const bus = new Vue()
-Object.defineProperty(Vue.prototype, '$bus', { get() { return this.$root.bus } })
 
 Vue.use(VueResource)
 Vue.use(VueRouter)
@@ -38,6 +34,13 @@ const router = new VueRouter({
     ]
 })
 
+// create bus for events
+const bus = new Vue()
+Object.defineProperty(Vue.prototype, '$bus', { get() { return this.$root.bus } })
+
+// set timezone to server timezone
+moment.tz.setDefault("UTC")
+
 export default {
     data: ()=> {
         return {
@@ -48,6 +51,7 @@ export default {
             day: moment()
         }
     },
+    components: { AppTitle, Overview },
     methods: {
         checkFilter(category, title, checked) {
             if (checked) {
@@ -60,9 +64,8 @@ export default {
             }
         }
     },
-    components: { AppTitle, Overview },
     created() {
-        this.$http.get('/api').then(response => { this.movies = response.data })
+        this.$http.get('/api').then(response => this.movies = response.data )
         this.$bus.$on('check-filter', this.checkFilter)
         this.$bus.$on('set-day', day => this.day = day )
     },

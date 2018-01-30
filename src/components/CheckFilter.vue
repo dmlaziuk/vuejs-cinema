@@ -4,6 +4,7 @@
         <span class="check-filter-title">{{ title }}</span>
     </div>
 </template>
+
 <script>
 export default {
     data: ()=> {
